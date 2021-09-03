@@ -5,13 +5,22 @@ import Operation from './Components/Operation/Operation';
 
 class App extends Component {
   state = {
-    transactions: [],
+    transactions: JSON.parse(localStorage.getItem('clackMoney')) || [],
     description: '',
     amount: '',
     resultIncome: 0,
     resultExpenses: 0,
     totalBalance: 0,
   };
+
+  // eslint-disable-next-line camelcase, babel/camelcase
+  UNSAFE_componentWillMount() {
+    this.calculate();
+  }
+
+  componentDidUpdate() {
+    this.addStorage();
+  }
 
   addTransaction = add => {
     const transactions = [...this.state.transactions];
@@ -44,8 +53,16 @@ class App extends Component {
     const totalBalance = resultIncome - resultExpenses;
 
     this.setState({ resultIncome, resultExpenses, totalBalance });
-
   }
+
+  addStorage() {
+    localStorage.setItem('clackMoney', JSON.stringify(this.state.transactions));
+  }
+
+  delTransaction = id => {
+    const transactions = this.state.transactions.filter(item => item.id !== id);
+    this.setState({ transactions }, this.calculate);
+  };
 
   render() {
     return (
@@ -61,7 +78,9 @@ class App extends Component {
               resultExpenses={this.state.resultExpenses}
               totalBalance={this.state.totalBalance}
             />
-            <History transactions={this.state.transactions} />
+            <History
+              transactions={this.state.transactions}
+              delTransaction={this.delTransaction} />
             <Operation
               addTransaction={this.addTransaction}
               addDescription={this.addDescription}

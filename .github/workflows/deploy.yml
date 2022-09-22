@@ -16,7 +16,7 @@ jobs:
       - run: echo "${{ secrets.key }}" > "$HOME/.ssh/key"
       - run: chmod 600 "$HOME/.ssh/key"
       # Build
-      - run: npm ci
-      - run: npm run build
+      - run: yarn --frozen-lockfile
+      - run: yarn run build
       # Deploy
       - run: cd build && rsync -e "ssh -p 2279 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete . superdiv@rootdiv.ru:/var/www/rootdiv.ru/calc-money
